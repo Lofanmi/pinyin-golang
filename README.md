@@ -42,7 +42,7 @@ Go 1.7+测试通过, 1.6及以下应该也可以, 不过单元测试跑不了.
 # 如何安装
 
 ```bash
-go get -u -v github.com/Lofanmi/pinyin-golang
+go get -u -v github.com/Lofanmi/pinyin-golang/pinyin
 ```
 
 # 用法
