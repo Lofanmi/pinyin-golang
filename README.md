@@ -47,39 +47,36 @@ go get -u -v github.com/Lofanmi/pinyin-golang/pinyin
 
 # 用法
 
-## 转换接口: Dict.Convert
-
-输入中文字符串, 指定拼音与拼音之间的分隔号, 返回特定格式的拼音字符串.
+## 引入
 
 ```go
 import (
 	"github.com/Lofanmi/pinyin-golang/pinyin"
 )
+```
 
-func test() {
-	filename := "/path/to/cedict.lofanmi"
-	dict, err := pinyin.NewDict(filename)
-	if err != nil {
-		panic(err)
-	}
+## 转换接口: Dict.Convert
 
-	s = `我，何时能暴富？`
+输入中文字符串, 指定拼音与拼音之间的分隔号, 返回特定格式的拼音字符串.
 
-	// 输入繁体中文, 输出为带 空格 分隔的拼音字符串
-	// ASCII 格式显示
-	// wo3 he2 neng2 bao4 fu4
-	s = dict.Convert(s, " ", Traditional).ASCII()
-	
-	// 输入简体中文, 输出为带 连字符- 分隔的拼音字符串
-	// Unicode 格式显示
-	// wǒ-hé-shí-néng-bào-fù
-	s = dict.Convert(s, "-", Simplified).Unicode()
-	
-	// 转换简体中文和繁体中文, 转换为带 斜杆/ 分隔的拼音字符串
-	// 不显示声调
-	// wo/he/shi/neng/bao/fu
-	s = dict.Convert(s, "/", All).None()
-}
+```go
+// 输入繁体中文, 输出为带 空格 分隔的拼音字符串
+// ASCII 格式显示
+// wo3 he2 shi2 neng2 bao4 fu4
+s = dict.Convert(`我，何時能暴富？`, " ", pinyin.Traditional).ASCII()
+fmt.Println(s)
+
+// 输入简体中文, 输出为带 连字符- 分隔的拼音字符串
+// Unicode 格式显示
+// wǒ-hé-shí-néng-bào-fù
+s = dict.Convert(`我，何时能暴富？`, "-", pinyin.Simplified).Unicode()
+fmt.Println(s)
+
+// 转换简体中文和繁体中文, 转换为带 斜杆/ 分隔的拼音字符串
+// 不显示声调
+// wo/he/shi/neng/bao/fu
+s = dict.Convert(`我，何时能暴富？`, "/", pinyin.All).None()
+fmt.Println(s)
 ```
 
 ## 句子接口: Dict.Sentence
@@ -87,24 +84,23 @@ func test() {
 输入中文字符串, 保留标点符号, 并转换中文标点为英文标点, 返回特定格式的拼音字符串.
 
 ```go
-func test() {
-	s = `我，何时能暴富？`
+// 输入繁体中文, 输出为带 空格 分隔的拼音字符串
+// ASCII 格式显示
+// wo3, he2 shi2 neng2 bao4 fu4?
+s = dict.Sentence(`我，何時能暴富？`, pinyin.Traditional).ASCII()
+fmt.Println(s)
 
-	// 输入繁体中文, 输出为带 空格 分隔的拼音字符串
-	// ASCII 格式显示
-	// wo3, he2 shi2 neng2 bao4 fu4?
-	s = dict.Sentence(s, Traditional).ASCII()
-	
-	// 输入简体中文, 输出为带 空格 分隔的拼音字符串
-	// Unicode 格式显示
-	// wǒ, hé shí néng bào fù?
-	s = dict.Sentence(s, Simplified).Unicode()
-	
-	// 转换简体中文和繁体中文, 转换为带 空格 分隔的拼音字符串
-	// 不显示声调
-	// wo, he shi neng bao fu?
-	s = dict.Sentence(s, All).None()
-}
+// 输入简体中文, 输出为带 空格 分隔的拼音字符串
+// Unicode 格式显示
+// wǒ, hé shí néng bào fù?
+s = dict.Sentence(`我，何时能暴富？`, pinyin.Simplified).Unicode()
+fmt.Println(s)
+
+// 转换简体中文和繁体中文, 转换为带 空格 分隔的拼音字符串
+// 不显示声调
+// wo, he shi neng bao fu?
+s = dict.Sentence(`我，何时能暴富？`, pinyin.All).None()
+fmt.Println(s)
 ```
 
 ## 转换人名: Dict.Name
@@ -112,24 +108,23 @@ func test() {
 输入姓氏人名, 返回特定格式的拼音字符串.
 
 ```go
-func test() {
-	s = `万俟沃喜欢吃酸奶`
+// 输入繁体中文, 输出为带 空格 分隔的人名拼音字符串
+// ASCII 格式显示
+// mo4 qi2 wo4 xi3 huan1 chi1 suan1 nai3
+s = dict.Name(`万俟沃喜欢吃酸奶`, " ", pinyin.Traditional).ASCII()
+fmt.Println(s)
 
-	// 输入繁体中文, 输出为带 空格 分隔的人名拼音字符串
-	// ASCII 格式显示
-	// mo4 qi2 wo4 xi3 huan1 chi1 suan1 nai3
-	s = dict.Name(s, " ", Traditional).ASCII()
-	
-	// 输入简体中文, 输出为带 连字符- 分隔的人名拼音字符串
-	// Unicode 格式显示
-	// mò-qí-wò-xǐ-huan-chī-suān-nǎi
-	s = dict.Name(s, "-", Simplified).Unicode()
-	
-	// 转换简体中文和繁体中文, 转换为带 斜杆/ 分隔的人名拼音字符串
-	// 不显示声调
-	// mo/qi/wo/xi/huan/chi/suan/nai
-	s = dict.Name(s, "/", All).None()
-}
+// 输入简体中文, 输出为带 连字符- 分隔的人名拼音字符串
+// Unicode 格式显示
+// mò-qí-wò-xǐ-huan-chī-suān-nǎi
+s = dict.Name(`万俟沃喜欢吃酸奶`, "-", pinyin.Simplified).Unicode()
+fmt.Println(s)
+
+// 转换简体中文和繁体中文, 转换为带 斜杆/ 分隔的人名拼音字符串
+// 不显示声调
+// mo/qi/wo/xi/huan/chi/suan/nai
+s = dict.Name(`万俟沃喜欢吃酸奶`, "/", pinyin.All).None()
+fmt.Println(s)
 ```
 
 ## 转换拼音简写: Dict.Abbr
@@ -137,29 +132,23 @@ func test() {
 输入中文字符串, 指定拼音与拼音之间的分隔号, 返回特定格式的拼音字符串的简写.
 
 ```go
-func test() {
-	s = `万俟沃喜欢吃酸奶`
-
-	// 转换简体中文和繁体中文, 输出为带 连字符- 分隔的拼音字符串首字符
-	// m-q-w-x-h-c-s-n
-	s = dict.Abbr(s, "-", All)
-}
+// 转换简体中文和繁体中文, 输出为带 连字符- 分隔的拼音字符串首字符
+// m-q-w-x-h-c-s-n
+s = dict.Abbr(`万俟沃喜欢吃酸奶`, "-", pinyin.All)
+fmt.Println(s)
 ```
 
-## 转换为字符串slice: ToSlice
+## 转换为字符串 slice: ToSlice
 
 有时候可能需要对转换的结果做进一步处理, 可以使用 `ToSlice` 接口:
 
 ```go
-func test() {
-	s = `我，何时能暴富？`
+// wo3 he2 shi2 neng2 bao4 fu4
+s = dict.Convert(`我，何時能暴富？`, " ", pinyin.Traditional).ASCII()
+fmt.Println(s)
 
-	// wo3 he2 neng2 bao4 fu4
-	s = dict.Convert(s, " ", Traditional).ASCII()
-
-	// [wo3 he2 neng2 bao4 fu4]
-	fmt.Printf("%v", ToSlice(s))
-}
+// [wo3 he2 shi2 neng2 bao4 fu4]
+fmt.Printf("%v", pinyin.ToSlice(s))
 ```
 
 # Contribution
@@ -169,3 +158,8 @@ func test() {
 # License
 
 MIT
+
+# TODO
+
+1. 支持默认词库, 无需传递词库的绝对路径;
+2. 制作一个更小型的词库, 词库来源于 [安正超](https://overtrue.me/) 的 [PHP 汉字转拼音项目](https://github.com/overtrue/pinyin).
