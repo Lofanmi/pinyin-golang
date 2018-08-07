@@ -16,7 +16,7 @@ Go 1.7+测试通过, 1.6及以下应该也可以, 不过单元测试跑不了.
 
 # 优势
 
-采用 cc-cedict 词库, 并在其基础上针对语义优化词库顺序, 尽可能提高转换准确率.
+采用 [CC-CEDICT](https://cc-cedict.org/wiki/start) 词库, 并在其基础上针对语义优化词库顺序, 尽可能提高转换准确率.
 
 1. 使用反引号分隔的新格式, 解析起来更容易;
 2. 按照中文字符长度排序, 字符长的优先被替换为拼音;
@@ -95,12 +95,12 @@ func test() {
 	// wo3, he2 shi2 neng2 bao4 fu4?
 	s = dict.Sentence(s, Traditional).ASCII()
 	
-	// 输入简体中文, 输出为带 连字符- 分隔的拼音字符串
+	// 输入简体中文, 输出为带 空格 分隔的拼音字符串
 	// Unicode 格式显示
 	// wǒ, hé shí néng bào fù?
 	s = dict.Sentence(s, Simplified).Unicode()
 	
-	// 转换简体中文和繁体中文, 转换为带 斜杆/ 分隔的拼音字符串
+	// 转换简体中文和繁体中文, 转换为带 空格 分隔的拼音字符串
 	// 不显示声调
 	// wo, he shi neng bao fu?
 	s = dict.Sentence(s, All).None()
