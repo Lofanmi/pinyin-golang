@@ -1,39 +1,9 @@
 package pinyin
 
 import (
-	"bufio"
-	"os"
 	"regexp"
 	"strings"
 )
-
-// -----------------------------------------------------------------------------
-
-// Record 词典记录
-type Record struct {
-	Traditional string
-	Simplified  string
-	Pinyin      string
-}
-
-// Records 记录列表
-type Records []*Record
-
-// -----------------------------------------------------------------------------
-
-// Language 简体中文/繁体中文
-type Language int
-
-const (
-	// Traditional 繁体中文
-	Traditional Language = iota
-	// Simplified  简体中文
-	Simplified
-	// All         转换繁体中文和简体中文
-	All
-)
-
-// -----------------------------------------------------------------------------
 
 var (
 	// punctuations 标点符号
@@ -51,17 +21,17 @@ var (
 		// 分号
 		"；", ";",
 		// 左/右单引号
-		"‘", "'", "’", "'",
+		"‘", " '", "’", " '",
 		// 左/右双引号
-		"“", `"`, "”", `"`,
+		"“", ` "`, "”", ` "`,
 		// 左/右直角引号
-		"「", "[", "」", "]",
-		"『", "[", "』", "]",
+		"「", " [", "」", " ]",
+		"『", " [", "』", " ]",
 		// 左/右括号
-		"（", "(", "）", ")",
-		"〔", "[", "〕", "]",
-		"【", "[", "】", "]",
-		"{", "}", "}", "}",
+		"（", " (", "）", " )",
+		"〔", " [", "〕", " ]",
+		"【", " [", "】", " ]",
+		"{", " {", "}", " }",
 		// 省略号
 		"……", "...",
 		// 破折号
@@ -69,14 +39,14 @@ var (
 		// 连接号
 		"—", "-",
 		// 左/右斜杆
-		"/", "/", "\\", "\\",
+		"/", " /", "\\", " \\",
 		// 波浪线
 		"～", "~",
 		// 书名号
-		"《", "<", "》", ">",
-		"〈", "<", "〉", ">",
+		"《", " <", "》", " >",
+		"〈", " <", "〉", " >",
 		// 间隔号
-		"·", "·",
+		"·", " ·",
 		// 顿号
 		"、", ",",
 	}
@@ -133,91 +103,6 @@ var (
 		// ong
 		"ong1", "ōng", "ong2", "óng", "ong3", "ǒng", "ong4", "òng",
 	}
-	// surnames 姓氏
-	// https://github.com/overtrue/pinyin/blob/master/data/surnames
-	surnames = []string{
-		"万俟", "	mo4	qi2",
-		"尉迟", "	yu4	chi2",
-		"单于", "	chan2	yu2",
-		"不", "	fou3",
-		"沈", "	shen3",
-		"称", "	cheng1",
-		"车", "	che1",
-		"万", "	wan4",
-		"汤", "	tang1",
-		"阿", "	a1",
-		"丁", "	ding1",
-		"强", "	qiang2",
-		"仇", "	qiu2",
-		"叶", "	ye4",
-		"阚", "	kan4",
-		"乐", "	yue4",
-		"乜", "	nie4",
-		"陆", "	lu4",
-		"殷", "	yin1",
-		"牟", "	mou2",
-		"区", "	ou1",
-		"宿", "	su4",
-		"俞", "	yu2",
-		"余", "	yu2",
-		"齐", "	qi2",
-		"许", "	xu3",
-		"信", "	xin4",
-		"无", "	wu2",
-		"浣", "	wan3",
-		"艾", "	ai4",
-		"浅", "	qian3",
-		"烟", "	yan1",
-		"蓝", "	lan2",
-		"於", "	yu2",
-		"寻", "	xun2",
-		"殳", "	shu1",
-		"思", "	si1",
-		"鸟", "	niao3",
-		"卜", "	bu3",
-		"单", "	shan4",
-		"南", "	nan2",
-		"柏", "	bai3",
-		"朴", "	piao2",
-		"繁", "	po2",
-		"曾", "	zeng1",
-		"瞿", "	qu2",
-		"缪", "	miao4",
-		"石", "	shi2",
-		"冯", "	feng2",
-		"覃", "	qin2",
-		"幺", "	yao1",
-		"种", "	chong2",
-		"折", "	she4",
-		"燕", "	yan1",
-		"纪", "	ji3",
-		"过", "	guo1",
-		"华", "	hua4",
-		"冼", "	xian3",
-		"秘", "	bi4",
-		"重", "	chong2",
-		"解", "	xie4",
-		"那", "	na1",
-		"和", "	he2",
-		"贾", "	jia3",
-		"塔", "	ta3",
-		"盛", "	sheng4",
-		"查", "	zha1",
-		"盖", "	ge3",
-		"居", "	ju1",
-		"哈", "	ha3",
-		"的", "	de1",
-		"薄", "	bo2",
-		"佴", "	nai4",
-		"六", "	lu4",
-		"都", "	du1",
-		"翟", "	zhai2",
-		"扎", "	za1",
-		"藏", "	zang4",
-		"粘", "	nian4",
-		"难", "	nan4",
-		"若", "	ruo4",
-	}
 )
 
 // -----------------------------------------------------------------------------
@@ -259,52 +144,16 @@ func (r *ConvertResult) None() string {
 // -----------------------------------------------------------------------------
 
 // Dict 拼音词典
-type Dict struct {
-	data  Records
-	tcmap map[string]*Record
-	scmap map[string]*Record
-}
+type Dict struct{}
 
 // NewDict 新建拼音词典对象
-func NewDict(dict string) (d *Dict, err error) {
-	f, err := os.OpenFile(dict, os.O_RDONLY, 0755)
-	if err != nil {
-		return
-	}
-
-	d = &Dict{
-		data:  make(Records, 0),
-		tcmap: make(map[string]*Record),
-		scmap: make(map[string]*Record),
-	}
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		s := scanner.Text()
-		if s[0] == '#' {
-			continue
-		}
-		parsed := strings.Split(s, "`")
-		r := &Record{
-			Traditional: parsed[0],
-			Simplified:  parsed[1],
-			Pinyin:      parsed[2],
-		}
-		d.data = append(d.data, r)
-		if _, ok := d.tcmap[r.Traditional]; !ok {
-			d.tcmap[r.Traditional] = r
-		}
-		if _, ok := d.scmap[r.Simplified]; !ok {
-			d.scmap[r.Simplified] = r
-		}
-	}
-
-	return
+func NewDict() *Dict {
+	return &Dict{}
 }
 
 // Convert 中文转换为拼音, 不保留标点符号
-func (p *Dict) Convert(s string, sep string, option Language) (result *ConvertResult) {
-	s = p.romanize(s, option, false)
+func (p *Dict) Convert(s string, sep string) (result *ConvertResult) {
+	s = p.romanize(s, false)
 
 	split := ToSlice(s)
 
@@ -313,10 +162,12 @@ func (p *Dict) Convert(s string, sep string, option Language) (result *ConvertRe
 }
 
 // Sentence 中文转换为拼音, 保留标点符号
-func (p *Dict) Sentence(s string, option Language) (result *ConvertResult) {
-	s = p.romanize(s, option, false)
+func (p *Dict) Sentence(s string) (result *ConvertResult) {
+	s = p.romanize(s, false)
 
-	re := regexp.MustCompile("[^a-z0-9" + regexp.QuoteMeta(strings.Join(punctuations, "")) + `\s_]+`)
+	r := regexp.QuoteMeta(strings.Join(punctuations, ""))
+	r = strings.Replace(r, " ", "", -1)
+	re := regexp.MustCompile("[^a-zA-Z0-9" + r + `\s_]+`)
 	s = re.ReplaceAllString(s, "")
 
 	for i := 0; i < len(punctuations); i += 2 {
@@ -328,8 +179,8 @@ func (p *Dict) Sentence(s string, option Language) (result *ConvertResult) {
 }
 
 // Name 转换人名
-func (p *Dict) Name(s string, sep string, option Language) (result *ConvertResult) {
-	s = p.romanize(s, option, true)
+func (p *Dict) Name(s string, sep string) (result *ConvertResult) {
+	s = p.romanize(s, true)
 
 	split := ToSlice(s)
 
@@ -338,8 +189,8 @@ func (p *Dict) Name(s string, sep string, option Language) (result *ConvertResul
 }
 
 // Abbr 获取拼音的首字符
-func (p *Dict) Abbr(s string, sep string, option Language) string {
-	s = p.romanize(s, option, false)
+func (p *Dict) Abbr(s string, sep string) string {
+	s = p.romanize(s, false)
 
 	var abbr []string
 	for _, item := range ToSlice(s) {
@@ -363,7 +214,7 @@ func (p *Dict) prepare(s string) string {
 	return s
 }
 
-func (p *Dict) romanize(s string, option Language, convertName bool) string {
+func (p *Dict) romanize(s string, convertName bool) string {
 	s = p.prepare(s)
 
 	if convertName {
@@ -374,23 +225,8 @@ func (p *Dict) romanize(s string, option Language, convertName bool) string {
 		}
 	}
 
-	if option == All || option == Traditional {
-		if r, ok := p.tcmap[s]; ok {
-			s = r.Pinyin
-		} else {
-			for _, record := range p.data {
-				s = strings.Replace(s, record.Traditional, record.Pinyin, -1)
-			}
-		}
-	}
-	if option == All || option == Simplified {
-		if r, ok := p.scmap[s]; ok {
-			s = r.Pinyin
-		} else {
-			for _, record := range p.data {
-				s = strings.Replace(s, record.Simplified, record.Pinyin, -1)
-			}
-		}
+	for i := 0; i < len(dict); i += 2 {
+		s = strings.Replace(s, dict[i], dict[i+1], -1)
 	}
 
 	s = strings.Replace(s, "\t", " ", -1)
