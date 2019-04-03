@@ -72,7 +72,7 @@ fmt.Println(s)
 // 转换简体中文和繁体中文, 转换为带 空格 分隔的拼音字符串
 // 不显示声调
 // wo, he shi neng bao fu?
-s = dict.Sentence(`我，何时能暴富？`).None()
+s = dict.Sentence(`我，何时能暴富？`).String()
 fmt.Println(s)
 ```
 

@@ -141,6 +141,9 @@ func (r *ConvertResult) None() string {
 	return s
 }
 
+// String 与 ASCII 相同
+func (r *ConvertResult) String() string { return r.ASCII() }
+
 // -----------------------------------------------------------------------------
 
 // Dict 拼音词典
@@ -148,7 +151,7 @@ type Dict struct{}
 
 // NewDict 新建拼音词典对象
 func NewDict() *Dict {
-	return &Dict{}
+	return new(Dict)
 }
 
 // Convert 中文转换为拼音, 不保留标点符号
