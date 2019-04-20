@@ -141,9 +141,6 @@ func (r *ConvertResult) None() string {
 	return s
 }
 
-// String 与 ASCII 相同
-func (r *ConvertResult) String() string { return r.ASCII() }
-
 // -----------------------------------------------------------------------------
 
 // Dict 拼音词典
