@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Lofanmi/pinyin-golang/pinyin"
+	"github.com/UnparalleledBeauty/pinyin-golang/pinyin"
 )
 
 func main() {

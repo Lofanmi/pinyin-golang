@@ -50,6 +50,11 @@ fmt.Println(s)
 // wo/he/shi/neng/bao/fu
 s = dict.Convert(`我，何时能暴富？`, "/").None()
 fmt.Println(s)
+
+// 针对中文姓名或用户名中包含数字的情况，比如 刘伟2
+s = dict.Convert(`刘伟2`, "").NoneV2()
+fmt.Println(s)
+//输出结果:liuwei2
 ```
 
 ## 句子接口: Dict.Sentence

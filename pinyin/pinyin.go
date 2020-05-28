@@ -1,7 +1,9 @@
 package pinyin
 
 import (
+	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -140,7 +142,28 @@ func (r *ConvertResult) None() string {
 	s = re.ReplaceAllString(s, "")
 	return s
 }
-
+// NoneV2 不带声调输出，并保留原有的数字
+// 徐超2 ====> xuchao2
+func (r *ConvertResult) NoneV2() string {
+	s := string(*r)
+	resStr := ""
+	numSum := 0
+	for _, str := range s {
+		eachChar := fmt.Sprintf("%c",str)
+		_,err := strconv.Atoi(eachChar)
+		if err != nil {
+			resStr += eachChar
+			numSum = 0
+			continue
+		}
+		numSum++
+		if numSum == 2{
+			resStr += eachChar
+			numSum = 0
+		}
+	}
+	return resStr
+}
 // -----------------------------------------------------------------------------
 
 // Dict 拼音词典

@@ -161,3 +161,26 @@ func TestDict_Abbr(t *testing.T) {
 		})
 	}
 }
+
+func TestConvertResult_NoneV2(t *testing.T) {
+	dict := getTestDict(t)
+	r := dict.Convert("刘伟2","")
+	tests := []struct {
+		name string
+		r    *ConvertResult
+		want string
+	}{
+		{
+			name:"testing for Nonev2()",
+			r : r,
+			want: "liuwei2",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.r.NoneV2(); got != tt.want {
+				t.Errorf("NoneV2() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
