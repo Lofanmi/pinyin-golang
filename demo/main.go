@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Lofanmi/pinyin-golang/pinyin"
+	"pinyin-golang/pinyin"
 )
 
 func main() {
@@ -109,22 +109,52 @@ func main() {
 	fmt.Println(s)
 
 	// [wo3 he2 shi2 neng2 bao4 fu4]
-	fmt.Printf("%v", pinyin.ToSlice(s))
+	fmt.Printf("%v\n", pinyin.ToSlice(s))
 
-	// $ go run main.go
-	// Redis shì yí gè Key-Value cún chǔ xì tǒng.
-	// wǒ hé shí néng bào fù
-	// wǒ, hé shí néng bào fù?
-	// wo3 he2 shi2 neng2 bao4 fu4
-	// wǒ-hé-shí-néng-bào-fù
-	// wo/he/shi/neng/bao/fu
-	// wo3, he2 shi2 neng2 bao4 fu4?
-	// wǒ, hé shí néng bào fù?
-	// wo, he shi neng bao fu?
-	// mo4 qi2 wo4 xi3 huan1 chi1 suan1 nai3
-	// mò-qí-wò-xǐ-huān-chī-suān-nǎi
-	// mo/qi/wo/xi/huan/chi/suan/nai
-	// m-q-w-x-h-c-s-n
-	// wo3 he2 shi2 neng2 bao4 fu4
-	// [wo3 he2 shi2 neng2 bao4 fu4]
+	// ----
+	// 新增功能: 只转换中文和繁体字符
+	// ----
+	fmt.Println("\n---- 只转换中文和繁体字符的新功能 ----")
+
+	// 使用 ConvertOnlyChinese
+	fmt.Println("使用 ConvertOnlyChinese:")
+	// Ni3-hao3-我-de-peng2-you3!
+	s = dict.ConvertOnlyChinese(`Nihao我的朋友!`, "-").ASCII()
+	fmt.Println(s)
+
+	// Nǐ-hǎo-wǒ-de-péng-yǒu!
+	s = dict.ConvertOnlyChinese(`Nihao我的朋友!`, "-").Unicode()
+	fmt.Println(s)
+
+	// Ni-hao-wo-de-peng-you!
+	s = dict.ConvertOnlyChinese(`Nihao我的朋友!`, "-").None()
+	fmt.Println(s)
+
+	// 使用 SentenceOnlyChinese
+	fmt.Println("\n使用 SentenceOnlyChinese:")
+	// Ni hao wo3 de peng2 you3!
+	s = dict.SentenceOnlyChinese(`Nihao我的朋友!`).ASCII()
+	fmt.Println(s)
+
+	// Ni hao wǒ de péng yǒu!
+	s = dict.SentenceOnlyChinese(`Nihao我的朋友!`).Unicode()
+	fmt.Println(s)
+
+	// Ni hao wo de peng you!
+	s = dict.SentenceOnlyChinese(`Nihao我的朋友!`).None()
+	fmt.Println(s)
+
+	// 更复杂的例子
+	fmt.Println("\n更复杂的例子:")
+	// Hello, wo3 shi4 yi1 ge4 example! 123 numbers bu4 hui4 bei4 bian4 huan4.
+	s = dict.SentenceOnlyChinese(`Hello, 我是一个 example! 123 numbers不会被变换.`).ASCII()
+	fmt.Println(s)
+
+	// Hello, wǒ shì yī gè example! 123 numbers bù huì bèi biàn huàn.
+	s = dict.SentenceOnlyChinese(`Hello, 我是一个 example! 123 numbers不会被变换.`).Unicode()
+	fmt.Println(s)
+
+	// Hello, wo shi yi ge example! 123 numbers bu hui bei bian huan.
+	s = dict.SentenceOnlyChinese(`Hello, 我是一个 example! 123 numbers不会被变换.`).None()
+	fmt.Println(s)
 }

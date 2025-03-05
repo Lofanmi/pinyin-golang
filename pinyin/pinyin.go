@@ -247,3 +247,107 @@ func ToSlice(s string) []string {
 	}
 	return split
 }
+
+// ConvertOnlyChinese 只转换中文和繁体字符，保留其他字符
+func (p *Dict) ConvertOnlyChinese(s string, sep string) (result *ConvertResult) {
+	// 处理中文字符
+	var builder strings.Builder
+	
+	// 使用正则表达式匹配中文字符
+	reHan := regexp.MustCompile(`[\p{Han}]+`)
+	
+	// 查找所有中文字符的位置
+	indices := reHan.FindAllStringIndex(s, -1)
+	
+	lastIdx := 0
+	for _, idx := range indices {
+		start, end := idx[0], idx[1]
+		
+		// 添加非中文字符
+		if start > lastIdx {
+			builder.WriteString(s[lastIdx:start])
+		}
+		
+		// 转换中文字符
+		chineseChars := s[start:end]
+		pinyin := p.romanize(chineseChars, false)
+		
+		// 去除两侧空格
+		pinyin = strings.TrimSpace(pinyin)
+		
+		// 使用指定分隔符替换空格
+		pinyin = strings.ReplaceAll(pinyin, " ", sep)
+		
+		// 确保与前面字符的衔接
+		if builder.Len() > 0 && isAlphaNumeric(rune(builder.String()[builder.Len()-1])) {
+			builder.WriteString(sep)
+		}
+		
+		builder.WriteString(pinyin)
+		
+		lastIdx = end
+	}
+	
+	// 添加剩余的非中文字符
+	if lastIdx < len(s) {
+		builder.WriteString(s[lastIdx:])
+	}
+	
+	resultString := builder.String()
+	result = NewConvertResult(resultString)
+	return
+}
+
+// SentenceOnlyChinese 只转换中文和繁体字符，保留其他字符，包括标点符号和空格
+func (p *Dict) SentenceOnlyChinese(s string) (result *ConvertResult) {
+	// 处理中文字符
+	var builder strings.Builder
+	
+	// 使用正则表达式匹配中文字符
+	reHan := regexp.MustCompile(`[\p{Han}]+`)
+	
+	// 查找所有中文字符的位置
+	indices := reHan.FindAllStringIndex(s, -1)
+	
+	lastIdx := 0
+	for _, idx := range indices {
+		start, end := idx[0], idx[1]
+		
+		// 添加非中文字符
+		if start > lastIdx {
+			builder.WriteString(s[lastIdx:start])
+		}
+		
+		// 转换中文字符
+		chineseChars := s[start:end]
+		pinyin := p.romanize(chineseChars, false)
+		
+		// 去除两侧空格并确保单词间只有一个空格
+		pinyin = strings.TrimSpace(pinyin)
+		re := regexp.MustCompile(`\s+`)
+		pinyin = re.ReplaceAllString(pinyin, " ")
+		
+		// 确保与前面字符的衔接
+		if builder.Len() > 0 && isAlphaNumeric(rune(builder.String()[builder.Len()-1])) {
+			builder.WriteString(" ")
+		}
+		
+		builder.WriteString(pinyin)
+		
+		lastIdx = end
+	}
+	
+	// 添加剩余的非中文字符
+	if lastIdx < len(s) {
+		builder.WriteString(s[lastIdx:])
+	}
+	
+	resultString := builder.String()
+	result = NewConvertResult(resultString)
+	return
+}
+
+// isAlphaNumeric 检查字符是否为字母或数字
+func isAlphaNumeric(r rune) bool {
+	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9')
+}
