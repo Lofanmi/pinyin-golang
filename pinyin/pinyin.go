@@ -200,6 +200,16 @@ func (p *Dict) Abbr(s string, sep string) string {
 	return strings.Join(abbr, sep)
 }
 
+func (p *Dict) AbbrWithNonHan(s string, sep string) string {
+        s = p.romanize(s, false)
+	re := regexp.MustCompile(`[a-zA-Z]+[1-4]`)
+	replaced := re.ReplaceAllStringFunc(s, func(match string) string {
+		return string([]rune(match)[0])
+	})
+	split := strings.Split(replaced, " ")
+	return strings.Join(split, sep)
+}
+
 func (p *Dict) prepare(s string) string {
 	var re *regexp.Regexp
 
